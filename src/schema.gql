@@ -1,0 +1,209 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AddToBookmark {
+  message: String
+}
+
+type AddToBookmarkResponse {
+  bookmark: AddToBookmark
+  error: ErrorType
+}
+
+input AppointmentDto {
+  contractorId: String!
+  date: String!
+  time: String!
+}
+
+type AppointmentResponse {
+  appointment: AppointmentsResponse
+  error: ErrorType
+}
+
+type AppointmentsResponse {
+  contractor: ConntractorsResponse
+  date: String
+  id: String!
+  status: String
+  time: String
+  userId: String
+}
+
+type BookmarkConntractorsResponse {
+  contractor: User!
+  contractorId: String!
+  id: String!
+  userId: String!
+}
+
+input BookmarkDto {
+  contractorId: String!
+}
+
+input CancelAppointmentDto {
+  id: String!
+}
+
+type ConntractorsResponse {
+  fullname: String
+  id: String!
+  image: String
+  price: String
+  service: String
+  subService: [String!]
+  unit: String
+}
+
+type Contractor {
+  about: String
+  address: String
+  bio: String
+  dob: String
+  email: String!
+  fullname: String!
+  id: String!
+  image: String
+  nikname: String
+  phone: String
+  price: String
+  service: String
+  subService: [String!]
+  unit: String
+}
+
+input ContractorDetailsDto {
+  id: String!
+}
+
+input ContractorsDto {
+  service: String!
+  skip: Float = 0
+  take: Float = 20
+}
+
+input CreateOfferDto {
+  desc: String
+  percent: Float!
+  promo: String
+  title: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type ErrorType {
+  code: String
+  message: String!
+}
+
+input LoginDto {
+  email: String!
+  password: String!
+}
+
+type LoginResponse {
+  error: ErrorType
+  user: User
+}
+
+type Mutation {
+  AllOffers: [Offers!]!
+  addToBookmark(bookmarkInput: BookmarkDto!): AddToBookmarkResponse!
+  approvedAppointment(approveAppointmentInput: CancelAppointmentDto!): AppointmentResponse!
+  bookAppointment(appointmentInput: AppointmentDto!): AppointmentResponse!
+  cancelAppointment(cancelAppointmentInput: CancelAppointmentDto!): AppointmentResponse!
+  completeAppointment(completeAppointmentInput: CancelAppointmentDto!): AppointmentResponse!
+  contractorAppointment(contractorAppointmentInput: MyAppointmentDto!): [AppointmentsResponse!]!
+  contractorDetails(contractorDetailsInput: ContractorDetailsDto!): conntractorResponse!
+  createContractor(contractorInput: RegisterContractorDto!): conntractorResponse!
+  createOffer(offerInput: CreateOfferDto!): createOfferResponse!
+  getContractor(getContractorInput: ContractorsDto!): [ConntractorsResponse!]!
+  login(loginInput: LoginDto!): LoginResponse!
+  me: LoginResponse!
+  myAppointment(myAppointmentInput: MyAppointmentDto!): [AppointmentsResponse!]!
+  myAppointmentByDate(myAppointmentByDateInput: MyAppointmentByDateDto!): [AppointmentsResponse!]!
+  myBookmark(contractors: ContractorsDto!): [BookmarkConntractorsResponse!]!
+  myNotifications(notificationInput: MyNotificationsDto!): [MyNotificationResponse!]!
+  rejectAppointment(rejectAppointmentInput: CancelAppointmentDto!): AppointmentResponse!
+}
+
+input MyAppointmentByDateDto {
+  date: DateTime!
+  skip: Float!
+  take: Float!
+}
+
+input MyAppointmentDto {
+  skip: Float!
+  status: String! = "pending"
+  take: Float!
+}
+
+type MyNotificationResponse {
+  broadcast: Boolean
+  createdAt: String
+  desc: String
+  id: String
+  title: String
+  type: String
+  userId: String
+}
+
+input MyNotificationsDto {
+  skip: Float! = 0
+  take: Float! = 20
+}
+
+type Offers {
+  desc: String!
+  id: String!
+  percent: String!
+  promo: String!
+  title: String!
+}
+
+type Query {
+  hello: User!
+}
+
+input RegisterContractorDto {
+  about: String
+  price: String
+  service: String!
+  subServices: [String!]
+  unit: String
+}
+
+type User {
+  accessToken: String
+  address: String
+  bio: String
+  bookmark: [String!]
+  createdAt: DateTime!
+  dob: String
+  email: String!
+  fullname: String!
+  id: String!
+  image: String
+  isContractor: Boolean
+  nikname: String
+  password: String!
+  phone: String
+  refreshToken: String
+  updatedAt: DateTime!
+}
+
+type conntractorResponse {
+  contractor: Contractor
+  error: ErrorType
+  user: User
+}
+
+type createOfferResponse {
+  error: ErrorType
+  offer: Offers
+}
