@@ -50,3 +50,18 @@ export class ContractorDetailsDto {
   id: string;
 
 }
+@InputType()
+export class SearchContractorsDto {
+  @Field()
+  @IsNotEmpty({ message: 'Service name is required' })
+  search: string;
+
+  @Field({nullable : true , defaultValue : 0})
+  @IsOptional()
+  skip : number;
+
+  @Field({nullable : true , defaultValue : 20})
+  @IsOptional()
+  take : number;
+
+}

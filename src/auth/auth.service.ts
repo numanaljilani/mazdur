@@ -8,7 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma.service';
-import { LoginDto, RegisterContractorDto, RegisterDto } from './dto';
+import { LoginDto, RegisterContractorDto, RegisterDto, SocialLoginDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 import { EmailConflictException } from 'src/filters/email-conflict.exception';
@@ -285,6 +285,29 @@ export class AuthService {
       };
       // throw Error("User not found")
       // Provide a proper error response
+    }
+
+    return this.issueTokens(user); // Issue tokens on login
+  }
+
+
+  async socialLogin(socialLoginDto: SocialLoginDto, response: Response) {
+    // const user = await this.validateUser(loginDto);
+    const user = await this.prisma.user.findUnique({
+      where: { email: socialLoginDto.email ,
+        socialAuthName : socialLoginDto.socialAuthName
+       },
+    });
+    console.log(user, 'find user by auth and email');
+
+    if (!user) {
+      return {
+        error: {
+          message: 'User doest exists',
+          status: HttpStatus.CONFLICT,
+        },
+        user: null,
+      };
     }
 
     return this.issueTokens(user); // Issue tokens on login

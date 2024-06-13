@@ -40,6 +40,7 @@ type BookmarkConntractorsResponse {
 
 input BookmarkDto {
   contractorId: String!
+  isBookmark: Boolean! = false
 }
 
 input CancelAppointmentDto {
@@ -50,6 +51,7 @@ type ConntractorsResponse {
   fullname: String
   id: String!
   image: String
+  isBookmark: Boolean
   price: String
   service: String
   subService: [String!]
@@ -129,6 +131,8 @@ type Mutation {
   myBookmark(contractors: ContractorsDto!): [BookmarkConntractorsResponse!]!
   myNotifications(notificationInput: MyNotificationsDto!): [MyNotificationResponse!]!
   rejectAppointment(rejectAppointmentInput: CancelAppointmentDto!): AppointmentResponse!
+  searchContractor(searchContractorInput: SearchContractorsDto!): [ConntractorsResponse!]!
+  socialLogin(socialLoginInput: SocialLoginDto!): LoginResponse!
 }
 
 input MyAppointmentByDateDto {
@@ -176,6 +180,17 @@ input RegisterContractorDto {
   service: String!
   subServices: [String!]
   unit: String
+}
+
+input SearchContractorsDto {
+  search: String!
+  skip: Float = 0
+  take: Float = 20
+}
+
+input SocialLoginDto {
+  email: String!
+  socialAuthName: String!
 }
 
 type User {

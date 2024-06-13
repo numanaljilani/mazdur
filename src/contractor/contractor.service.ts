@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
+import { SearchContractorsDto } from './contractor.dto';
 
 @Injectable()
 export class ContractorService {
@@ -15,44 +16,79 @@ export class ContractorService {
         price: registerContractorDto.price,
       },
     });
-    console.log(contractor ," updated data")
+    console.log(contractor, ' updated data');
     return {
       contractor,
-      error : null
+      error: null,
     };
   }
 
+  async getContractors(contractorsDto, userId) {
+    const contractors = await this.prisma.user.findMany({
+      where: {
+        service: contractorsDto.service,
+      },
+      take: contractorsDto.take,
+      skip: contractorsDto.skip,
+    });
+    // console.log(contractors, 'contractors');
+    const myBookmarks = await this.prisma.bookmark.findMany({
+      where: {
+        userId: userId,
+      },
+    });
 
-  async getContractors(contractorsDto){
-    const contractors = await this.prisma.user.findMany(
-      {
-        where : {
-          service : contractorsDto.service
-        },
-        take : contractorsDto.take,
-        skip : contractorsDto.skip
-      }
-    );
-    console.log(contractors , "contractors")
+    const fliteredContractors = contractors.map((contractor) => {
+      const isBookmark = myBookmarks.some(
+        (bookmark) => bookmark.contractorId == contractor.id,
+      );
+      console.log(isBookmark,">>>>>>>>>>>>> bookedmarks")
+      return {
+        ...contractor,
+        isBookmark : isBookmark,
+      };
+    });
+    // console.log(fliteredContractors, 'fliteredContractors');
 
-    return contractors
-
+    return fliteredContractors;
   }
-  async contractorsDetails(contractorDetailsDto){
-    const contractor = await this.prisma.user.findUnique(
-      {
-        where : {
-          id : contractorDetailsDto.id
-        },
-      }
-    );
-    console.log(contractor , "contractors")
+
+  async searchContractors(contractorsDto: SearchContractorsDto) {
+    const contractors = await this.prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            service: {
+              contains: contractorsDto.search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            fullname: {
+              contains: contractorsDto.search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+      take: contractorsDto.take,
+      skip: contractorsDto.skip,
+    });
+    console.log(contractors, ' Search contractors');
+
+    return contractors;
+  }
+  async contractorsDetails(contractorDetailsDto) {
+    const contractor = await this.prisma.user.findUnique({
+      where: {
+        id: contractorDetailsDto.id,
+      },
+    });
+    console.log(contractor, 'contractors');
 
     return {
       contractor,
-      error : null
+      error: null,
     };
   }
-
-
 }

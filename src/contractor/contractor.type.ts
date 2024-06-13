@@ -69,6 +69,9 @@ export class ConntractorsResponse {
 
   @Field(() => String, { nullable: true })
   price: string;
+
+  @Field(() => Boolean, { nullable: true , defaultValue : false})
+  isBookmark: boolean;
   
   @Field(() => String, { nullable: true })
   unit: string;  
