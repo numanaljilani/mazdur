@@ -22,6 +22,10 @@ export class RegisterDto {
 
   @Field( { nullable: true })
   @IsOptional()
+  socialAuthName?: string;
+
+  @Field( { nullable: true })
+  @IsOptional()
   dob?: string;
 
   @Field( { nullable: true })
@@ -38,6 +42,29 @@ export class RegisterDto {
 
   @IsOptional()
   file?: any;
+}
+@InputType()
+export class SocialSignupDto {
+  @Field()
+  @IsNotEmpty({ message: 'Fullname is required.' })
+  @IsString({ message: 'Fullname must be a string.' })
+  fullname: string;
+
+
+
+  @Field()
+  @IsNotEmpty({ message: 'Email is required.' })
+  @IsEmail({}, { message: 'Email must be valid.' })
+  email: string;
+
+  @Field( { nullable: true })
+  @IsOptional()
+  socialAuthName?: string;
+
+  @Field( { nullable: true })
+  @IsOptional()
+  image?: string;
+
 }
 export class RegisterContractorDto {
   @Field()
@@ -80,6 +107,10 @@ export class LoginDto {
   @Field()
   @IsNotEmpty({ message: 'Password is required.' })
   password: string;
+
+  @Field( { nullable: true })
+  @IsOptional()
+  fcmtoken?: string;
 }
 
 
@@ -93,4 +124,8 @@ export class SocialLoginDto {
   @Field()
   @IsNotEmpty({ message: 'auth name' })
   socialAuthName: string;
+
+  @Field( { nullable: true })
+  @IsOptional()
+  fcmtoken?: string;
 }

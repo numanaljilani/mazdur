@@ -8,7 +8,13 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma.service';
-import { LoginDto, RegisterContractorDto, RegisterDto, SocialLoginDto } from './dto';
+import {
+  LoginDto,
+  RegisterContractorDto,
+  RegisterDto,
+  SocialLoginDto,
+  SocialSignupDto,
+} from './dto';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 import { EmailConflictException } from 'src/filters/email-conflict.exception';
@@ -65,7 +71,11 @@ export class AuthService {
   }
 
   private async issueTokens(user: User) {
-    const payload = { username: user.fullname, sub: user.id };
+    const payload = {
+      username: user.fullname,
+      sub: user.id,
+      fcmtoken: user?.fcmtoken ? user?.fcmtoken : null,
+    };
 
     const accessToken = this.jwtService.sign(
       { ...payload },
@@ -95,7 +105,16 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { email: loginDto.email },
     });
+
     if (user && (await bcrypt.compare(loginDto.password, user.password))) {
+      await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          fcmtoken: loginDto.fcmtoken,
+        },
+      });
       return user;
     }
     return null;
@@ -107,21 +126,21 @@ export class AuthService {
   ): Promise<any> {
     console.log('registerContractorDto!!!', registerContractorDto);
     try {
-    const payload =   this.jwtService.verify(registerContractorDto.token,{
+      const payload = this.jwtService.verify(registerContractorDto.token, {
         secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
-      })
+      });
       const data = {
         service: registerContractorDto.service,
         subService: registerContractorDto.subServices,
         price: registerContractorDto.price,
         unit: registerContractorDto.unit,
-        isContractor : true
+        isContractor: true,
       };
       if (registerContractorDto.about) {
         data['about'] = registerContractorDto.about;
       }
 
-            if (image) {
+      if (image) {
         const { originalname, buffer } = image;
         const s3res = await this.s3Service.uploadProfile(originalname, buffer);
         if (s3res) {
@@ -130,21 +149,20 @@ export class AuthService {
         console.log(s3res.Key, '>>>>>>');
       }
 
-      console.log(registerContractorDto.price)
+      console.log(registerContractorDto.price);
       const updateProfile = await this.prisma.user.update({
-        where : { 
-          id : payload.sub
+        where: {
+          id: payload.sub,
         },
-        data : {
-          isContractor :true,
-          price : registerContractorDto.price,
-          service : registerContractorDto.service,
-          subService : [`${registerContractorDto.subServices}`],
-          about : registerContractorDto.about,
-          unit : registerContractorDto.unit,
-
-        }
-      })
+        data: {
+          isContractor: true,
+          price: registerContractorDto.price,
+          service: registerContractorDto.service,
+          subService: [`${registerContractorDto.subServices}`],
+          about: registerContractorDto.about,
+          unit: registerContractorDto.unit,
+        },
+      });
 
       console.log(data);
       // if (image) {
@@ -175,9 +193,9 @@ export class AuthService {
       console.log(data, 'data');
 
       const user = await this.prisma.user.findUnique({
-      where : { 
-        id : payload.sub
-      }
+        where: {
+          id: payload.sub,
+        },
       });
       await this.notificationService.createNotification(
         {
@@ -187,10 +205,11 @@ export class AuthService {
           type: 'user',
         },
         user.id,
+        user.fcmtoken,
       );
       // console.log(user, 'user created successfull');
 
-      return user// Issue tokens on registration
+      return user; // Issue tokens on registration
     } catch (error) {
       if (error instanceof EmailConflictException) {
         throw new HttpException(error.message, HttpStatus.CONFLICT);
@@ -245,6 +264,10 @@ export class AuthService {
         data['phone'] = registerDto.phone;
       }
 
+      // if (registerDto) {
+      //   data['phone'] = registerDto.phone;
+      // }
+
       console.log(data, 'data');
 
       const user = await this.prisma.user.create({
@@ -258,6 +281,7 @@ export class AuthService {
           type: 'user',
         },
         user.id,
+        user.fcmtoken,
       );
       console.log(user, 'user created successfull');
 
@@ -272,13 +296,14 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto, response: Response) {
+    this.notificationService.sendNotification();
     const user = await this.validateUser(loginDto);
     console.log(user, 'after validation');
 
     if (!user) {
       return {
         error: {
-          message: 'User doest exists',
+          message: 'User doesnt exists',
           status: HttpStatus.CONFLICT,
         },
         user: null,
@@ -286,29 +311,73 @@ export class AuthService {
       // throw Error("User not found")
       // Provide a proper error response
     }
-
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        fcmtoken: loginDto.fcmtoken,
+      },
+    });
     return this.issueTokens(user); // Issue tokens on login
   }
 
+  async socialSignup(socialSignupDto: SocialSignupDto, response: Response) {
+    // const user = await this.validateUser(loginDto);
+    const user = await this.prisma.user.findUnique({
+      where: { email: socialSignupDto.email },
+    });
+    console.log(user, 'find user by auth and email social signup');
 
+    if (user) {
+      return {
+        error: {
+          message: 'User already exists , please login.',
+          status: HttpStatus.CONFLICT,
+        },
+        user: null,
+      };
+    }
+
+    const newUser = await this.prisma.user.create({
+      data: {
+        fullname: socialSignupDto.fullname,
+        nikname: socialSignupDto.fullname,
+        email: socialSignupDto.email,
+        socialAuthName: socialSignupDto.socialAuthName,
+        image: socialSignupDto.image,
+      },
+    });
+
+    return this.issueTokens(newUser); // Issue tokens on login
+  }
   async socialLogin(socialLoginDto: SocialLoginDto, response: Response) {
     // const user = await this.validateUser(loginDto);
     const user = await this.prisma.user.findUnique({
-      where: { email: socialLoginDto.email ,
-        socialAuthName : socialLoginDto.socialAuthName
-       },
+      where: {
+        email: socialLoginDto.email,
+        socialAuthName: socialLoginDto.socialAuthName,
+      },
     });
     console.log(user, 'find user by auth and email');
 
     if (!user) {
       return {
         error: {
-          message: 'User doest exists',
+          message: 'User doesnt exists',
           status: HttpStatus.CONFLICT,
         },
         user: null,
       };
     }
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        fcmtoken: socialLoginDto.fcmtoken,
+      },
+    });
 
     return this.issueTokens(user); // Issue tokens on login
   }

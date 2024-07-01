@@ -8,6 +8,7 @@ import { jwtConstants } from './jwt.strategy/constants';
 import { UploadService } from 'src/upload/upload.service';
 import { PassportModule } from '@nestjs/passport';
 import { NotificationService } from 'src/notification/notification.service';
+import { FirebaseService } from 'src/notification/firebase.service';
 @Module({
   imports: [
     JwtModule.register({
@@ -24,7 +25,7 @@ import { NotificationService } from 'src/notification/notification.service';
     //   inject: [ConfigService],
     // }),
   ],
-  providers: [AuthService,PrismaService,ConfigService,JwtService,UploadService,NotificationService],
+  providers: [AuthService,PrismaService,ConfigService,JwtService,UploadService,NotificationService,FirebaseService],
   exports: [JwtService, AuthService],
 })
 export class AuthModule {}

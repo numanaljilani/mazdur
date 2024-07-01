@@ -14,49 +14,52 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
-  fullname      String
-  bio           String?
-  image         String?
-  email         String         @unique
-  password      String?
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  fullname       String
+  bio            String?
+  image          String?
+  email          String         @unique
+  password       String?
   socialAuthName String?
-  phone         String?
-  address       String?
-  dob           String?
-  nikname       String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  isContractor Boolean? @default(false)
-  posts         Post[]
-  comments      Comment[]
-  likes         Like[]
-  bookmark      Bookmark[]
-  booking       Booking[]
-  notifications Notification[]
-  history       String[]
-  offer         String?        @db.ObjectId @map("Offers")
-  bookmarks     String[]
-  service       String?
-  subService    String[]
-  availability  Boolean?
-  locality      String?
-  price         String?
-  unit          String?
-  about         String?
-  rating        String?
+  fcmtoken       String?
+  phone          String?
+  address        String?
+  dob            String?
+  nikname        String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  isContractor   Boolean?       @default(false)
+  posts          Post[]
+  comments       Comment[]
+  likes          Like[]
+  bookmark       Bookmark[]
+  booking        Booking[]
+  notifications  Notification[]
+  history        String[]
+  offer          String?        @map("Offers") @db.ObjectId
+  bookmarks      String[]
+  service        String?
+  subService     String[]
+  availability   Boolean?
+  locality       String?
+  price          String?
+  unit           String?
+  about          String?
+  rating         Int? @default(5)
+  rewies         Int? @default(0)
 }
 
 model Post {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String    @map("user_id") @db.ObjectId
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  text      String
-  video     String
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  comments  Comment[]
-  likes     Like[]
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String    @map("user_id") @db.ObjectId
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contractorId String    @db.ObjectId
+  text         String?
+  rating       Int
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  comments     Comment[]
+  likes        Like[]
 }
 
 model Bookmark {

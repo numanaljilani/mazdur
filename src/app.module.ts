@@ -20,6 +20,8 @@ import { BookingModule } from './booking/booking.module';
 import { OffersModule } from './offers/offers.module';
 import { NotificationModule } from './notification/notification.module';
 import { NotificationService } from './notification/notification.service';
+import { FirebaseService } from './notification/firebase.service';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [AuthModule,
@@ -41,9 +43,10 @@ import { NotificationService } from './notification/notification.service';
     BookingModule,
     OffersModule,
     NotificationModule,
+    PostModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UserResolver,AuthService,UserService,PrismaService,UploadService,NotificationService],
+  providers: [AppService, UserResolver,AuthService,UserService,PrismaService,UploadService,NotificationService,FirebaseService],
 })
 export class AppModule implements NestModule
 {

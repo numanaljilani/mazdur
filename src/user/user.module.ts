@@ -8,10 +8,11 @@ import { PrismaService } from 'src/prisma.service';
 import { UserController } from './user.controller';
 import { UploadService } from 'src/upload/upload.service';
 import { NotificationService } from 'src/notification/notification.service';
+import { FirebaseService } from 'src/notification/firebase.service';
 
 @Module({
   imports : [],
-  providers: [UserService, UserResolver,AuthService,PrismaService , ConfigService,UploadService,NotificationService],
+  providers: [UserService, UserResolver,AuthService,PrismaService , ConfigService,UploadService,NotificationService,FirebaseService],
   controllers: [UserController]
 })
 export class UserModule {}

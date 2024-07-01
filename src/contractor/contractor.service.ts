@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { SearchContractorsDto } from './contractor.dto';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class ContractorService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService,
+    private readonly notificationService : NotificationService
+  ) {}
   async createContractor(registerContractorDto, userId) {
     const contractor = await this.prisma.user.update({
       where: { id: userId },
@@ -16,6 +19,7 @@ export class ContractorService {
         price: registerContractorDto.price,
       },
     });
+    await this.notificationService.sendNotification()
     console.log(contractor, ' updated data');
     return {
       contractor,

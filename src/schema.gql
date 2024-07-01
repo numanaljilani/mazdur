@@ -104,6 +104,7 @@ type ErrorType {
 
 input LoginDto {
   email: String!
+  fcmtoken: String
   password: String!
 }
 
@@ -123,7 +124,9 @@ type Mutation {
   contractorDetails(contractorDetailsInput: ContractorDetailsDto!): conntractorResponse!
   createContractor(contractorInput: RegisterContractorDto!): conntractorResponse!
   createOffer(offerInput: CreateOfferDto!): createOfferResponse!
+  createPost(postInput: PostDto!): PostType!
   getContractor(getContractorInput: ContractorsDto!): [ConntractorsResponse!]!
+  getPosts(getPostsInput: getPostDto!): [PostType!]!
   login(loginInput: LoginDto!): LoginResponse!
   me: LoginResponse!
   myAppointment(myAppointmentInput: MyAppointmentDto!): [AppointmentsResponse!]!
@@ -132,6 +135,7 @@ type Mutation {
   myNotifications(notificationInput: MyNotificationsDto!): [MyNotificationResponse!]!
   rejectAppointment(rejectAppointmentInput: CancelAppointmentDto!): AppointmentResponse!
   searchContractor(searchContractorInput: SearchContractorsDto!): [ConntractorsResponse!]!
+  sociaSignup(socialSignupInput: SocialSignupDto!): LoginResponse!
   socialLogin(socialLoginInput: SocialLoginDto!): LoginResponse!
 }
 
@@ -170,6 +174,20 @@ type Offers {
   title: String!
 }
 
+input PostDto {
+  contractorId: String!
+  rating: String!
+  serviceId: String!
+  text: String
+}
+
+type PostType {
+  createdAt: String
+  rating: String!
+  text: String
+  user: User
+}
+
 type Query {
   hello: User!
 }
@@ -190,7 +208,15 @@ input SearchContractorsDto {
 
 input SocialLoginDto {
   email: String!
+  fcmtoken: String
   socialAuthName: String!
+}
+
+input SocialSignupDto {
+  email: String!
+  fullname: String!
+  image: String
+  socialAuthName: String
 }
 
 type User {
@@ -221,4 +247,10 @@ type conntractorResponse {
 type createOfferResponse {
   error: ErrorType
   offer: Offers
+}
+
+input getPostDto {
+  contractorId: String!
+  skip: Float
+  take: Float
 }

@@ -2,7 +2,7 @@ import { Args, Context, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from './user.service';
 import { LoginResponse, RegisterResponse } from 'src/auth/types';
-import { LoginDto, SocialLoginDto } from 'src/auth/dto';
+import { LoginDto, RegisterDto, SocialLoginDto, SocialSignupDto } from 'src/auth/dto';
 import { User } from './user.model';
 import { UseGuards } from '@nestjs/common';
 import { GraphqlAuthGuard } from 'src/auth/auth.guard';
@@ -52,6 +52,13 @@ export class UserResolver {
     @Context() context: { res: Response },
   ) {
     return this.authService.login(loginDto, context.res);
+  }
+  @Mutation(() => LoginResponse) // Adjust this return type as needed
+  async sociaSignup(
+    @Args('socialSignupInput') socialSignupDto: SocialSignupDto,
+    @Context() context: { res: Response },
+  ) {
+    return this.authService.socialSignup(socialSignupDto, context.res);
   }
   @Mutation(() => LoginResponse) // Adjust this return type as needed
   async socialLogin(
