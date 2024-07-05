@@ -44,6 +44,33 @@ export class RegisterDto {
   file?: any;
 }
 @InputType()
+export class UpdateUserDto {
+  @Field()
+  @IsNotEmpty({ message: 'Fullname is required.' })
+  @IsString({ message: 'Fullname must be a string.' })
+  fullname: string;
+
+
+  @Field( { nullable: true })
+  @IsOptional()
+  dob?: string;
+
+  @Field( { nullable: true })
+  @IsOptional()
+  nikname?: string;
+
+  @Field( { nullable: true })
+  @IsOptional()
+  phone?: string;
+
+  @Field( { nullable: true })
+  @IsOptional()
+  address?: string;
+
+  @IsOptional()
+  file?: any;
+}
+@InputType()
 export class SocialSignupDto {
   @Field()
   @IsNotEmpty({ message: 'Fullname is required.' })

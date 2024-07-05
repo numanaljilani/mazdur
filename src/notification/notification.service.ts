@@ -42,7 +42,8 @@ export class NotificationService {
     });
 
     await this.firebaseService.sendNotification(
-      'djq2_U79Qj-9ahXVK_lAot:APA91bFag-XhMFkz3IMWvmyUz4eKR6OLI-kItJqMRc2rwZpEg8tmQcUON-qoKHqus4PvNEtcIuIUxWRjYd9H8UehkQAqwY6VE75b_bHvsEG2XlxjEIBeLH-YqL_dZablr7vIBIA3849k',
+      // 'djq2_U79Qj-9ahXVK_lAot:APA91bFag-XhMFkz3IMWvmyUz4eKR6OLI-kItJqMRc2rwZpEg8tmQcUON-qoKHqus4PvNEtcIuIUxWRjYd9H8UehkQAqwY6VE75b_bHvsEG2XlxjEIBeLH-YqL_dZablr7vIBIA3849k',
+      fcmtoken,
       {
         title: notifications.title,
         body: notifications.desc,

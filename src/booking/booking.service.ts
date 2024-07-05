@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { error } from 'console';
 import { NotificationService } from 'src/notification/notification.service';
 import { PrismaService } from 'src/prisma.service';
 import { UserService } from 'src/user/user.service';
@@ -97,35 +96,43 @@ export class BookingService {
     console.log(appointmentByDateDto.date, 'inside service');
 
     const startDate = new Date(appointmentByDateDto.date);
-    startDate.setHours(0, 0, 0, 0);
+    // startDate.setDate(startDate.getDate() + 1);
+    startDate.setUTCHours(0, 0, 0, 0);
+    console.log(startDate)
 
     // Set the end of the day
     const endDate = new Date(appointmentByDateDto.date);
-    endDate.setHours(23, 59, 59, 999);
+    // endDate.setDate(endDate.getDate() + 1);
+    endDate.setUTCHours(23, 59, 59, 999);
+    console.log(endDate)
 
-    const myBooking = await this.prisma.booking.findMany({
-      where: {
-        userId,
-        createdAt: {
-          gte: startDate,
-          lte: endDate,
-        },
+try {
+  const myBooking = await this.prisma.booking.findMany({
+    where: {
+      // userId,
+      date: {
+gte : startDate,
+lte : endDate
       },
-      take: appointmentByDateDto.take,
-      skip: appointmentByDateDto.skip,
-      include: {
-        contractor: true,
-      },
-    });
+    },
+    take: appointmentByDateDto.take,
+    skip: appointmentByDateDto.skip,
+    include: {
+      contractor: true,
+    },
+  });
 
-    console.log(myBooking);
+  console.log(myBooking);
 
-    return myBooking;
+  return myBooking;
+} catch (error) {
+  console.log(error , "Error in booking ")
+}
   }
 
   async contractorAppointment(appointmentDto, userId) {
     console.log(appointmentDto, 'inside service');
-    if (appointmentDto.status) {
+    if (appointmentDto.status == 'pending') {
       const myBooking = await this.prisma.booking.findMany({
         where: {
           contractorId: userId,
@@ -133,6 +140,39 @@ export class BookingService {
             { status: 'pending' },
             { status: 'upcoming' },
             { status: 'approved' },
+          ],
+        },
+        take: appointmentDto.take,
+        skip: appointmentDto.skip,
+        include: {
+          contractor: true,
+        },
+      });
+      console.log(myBooking);
+      return myBooking;
+    }else if (appointmentDto.status == 'reject' || appointmentDto.status == 'cancel'){
+      const myBooking = await this.prisma.booking.findMany({
+        where: {
+          contractorId: userId,
+          OR: [
+            { status: 'reject' },
+            { status: 'cancel' },
+          ],
+        },
+        take: appointmentDto.take,
+        skip: appointmentDto.skip,
+        include: {
+          contractor: true,
+        },
+      });
+      console.log(myBooking);
+      return myBooking;
+    } else if(appointmentDto.status == 'completed'){
+      const myBooking = await this.prisma.booking.findMany({
+        where: {
+          contractorId: userId,
+          OR: [
+            { status: 'completed' },
           ],
         },
         take: appointmentDto.take,
@@ -320,6 +360,8 @@ export class BookingService {
 
     return { appointment: comptedAppointment, error: null };
   }
+
+  async bookingByDate(){}
 }
 
 // Date

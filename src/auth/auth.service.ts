@@ -14,6 +14,7 @@ import {
   RegisterDto,
   SocialLoginDto,
   SocialSignupDto,
+  UpdateUserDto,
 } from './dto';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
@@ -277,6 +278,67 @@ export class AuthService {
         {
           title: 'congrats !!! your account is activated',
           desc: `congratulations ${user.fullname} !!! your account is created successfully`,
+          broadcast: false,
+          type: 'user',
+        },
+        user.id,
+        user.fcmtoken,
+      );
+      console.log(user, 'user created successfull');
+
+      return this.issueTokens(user); // Issue tokens on registration
+    } catch (error) {
+      if (error instanceof EmailConflictException) {
+        throw new HttpException(error.message, HttpStatus.CONFLICT);
+      }
+
+      throw new Error(error.message); // Provide a proper error response
+    }
+  }
+  async updateuser(registerDto: UpdateUserDto, userId , image?: any,): Promise<any> {
+    console.log('UpdateUserDto!!!', registerDto);
+    try {
+      const data = {
+        fullname: registerDto.fullname
+      };
+
+      if (image) {
+        const { originalname, buffer } = image;
+        const s3res = await this.s3Service.uploadProfile(originalname, buffer);
+        if (s3res) {
+          data['image'] = await s3res?.Key;
+        }
+        console.log(s3res.Key, '>>>>>>');
+      }
+
+      if (registerDto.nikname) {
+        data['nikname'] = registerDto.nikname;
+      }
+
+      if (registerDto.address) {
+        data['address'] = registerDto.address;
+      }
+
+      if (registerDto.dob) {
+        data['dob'] = registerDto.dob;
+      }
+
+      if (registerDto.phone) {
+        data['phone'] = registerDto.phone;
+      }
+
+      console.log(data, 'data');
+
+      const user = await this.prisma.user.update({
+        where : {
+          id : userId,
+        },
+        data
+      })
+      await this.notificationService.createNotification(
+        {
+          title: 'Update succesfull',
+          desc: `${user.fullname} !!! your have updated your profile successfully`,
           broadcast: false,
           type: 'user',
         },

@@ -32,6 +32,7 @@ export class BookingResolver {
         const userId = context.req?.user?.sub;
         return this.bookingService.myAppointment(appointmentDto , userId);
       }
+
       @Mutation(() => [AppointmentsResponse]) 
       @UseGuards(GraphqlAuthGuard)
       async myAppointmentByDate(

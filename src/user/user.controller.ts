@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from './user.service';
-import { RegisterContractorDto, RegisterDto } from 'src/auth/dto';
+import { RegisterContractorDto, RegisterDto, UpdateUserDto } from 'src/auth/dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Args, Context } from '@nestjs/graphql';
 import * as multer from 'multer';
@@ -41,6 +41,19 @@ export class UserController {
   ) {
     console.log("Inside registerContractorDto ")
    const result = await this.authService.registerContractor(registerContractorDto , file);
+
+   return { user : result}
+  }
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('update')
+  async updateprofile(
+    @UploadedFile() file: multer.File,
+    @Body() updateuserDto: UpdateUserDto,
+    @Context() context: { req: Response | any },
+  ) {
+    console.log("Inside updateuser ")
+    const userId = context.req?.user?.sub;
+   const result = await this.authService.updateuser(updateuserDto , file, userId!);
 
    return { user : result}
   }
