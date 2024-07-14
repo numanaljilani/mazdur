@@ -3,7 +3,7 @@ import { BookingService } from './booking.service';
 import { UseGuards } from '@nestjs/common';
 import { GraphqlAuthGuard } from 'src/auth/auth.guard';
 import { AppointmentDto, CancelAppointmentDto, MyAppointmentByDateDto, MyAppointmentDto } from './appointment.dto';
-import {  AppointmentResponse, AppointmentsResponse } from './appointment.type';
+import {  AppointmentResponse, AppointmentsResponse, ContractorAppointmentsResponse } from './appointment.type';
 
 @Resolver()
 export class BookingResolver {
@@ -43,7 +43,7 @@ export class BookingResolver {
         const userId = context.req?.user?.sub;
         return this.bookingService.myAppointmentByDate(appointmentByDateDto , userId);
       }
-      @Mutation(() => [AppointmentsResponse]) 
+      @Mutation(() => [ContractorAppointmentsResponse]) 
       @UseGuards(GraphqlAuthGuard)
       async contractorAppointment(
         @Args('contractorAppointmentInput') appointmentDto: MyAppointmentDto,

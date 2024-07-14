@@ -15,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Args, Context } from '@nestjs/graphql';
 import * as multer from 'multer';
 import { GraphqlAuthGuard } from 'src/auth/auth.guard';
+import { PostImageDto } from '../auth/dto';
 
 @Controller('user')
 export class UserController {
@@ -44,16 +45,30 @@ export class UserController {
 
    return { user : result}
   }
-  @UseInterceptors(FileInterceptor('file'))
   @Post('update')
+  // @UseGuards(GraphqlAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
   async updateprofile(
-    @UploadedFile() file: multer.File,
     @Body() updateuserDto: UpdateUserDto,
     @Context() context: { req: Response | any },
+    @UploadedFile() file?: multer.File,
   ) {
     console.log("Inside updateuser ")
     const userId = context.req?.user?.sub;
    const result = await this.authService.updateuser(updateuserDto , file, userId!);
+
+   return { user : result}
+  }
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('postimage')
+  async postimage(
+    @Body() postimageDto: PostImageDto,
+    @Context() context: { req: Response | any },
+    @UploadedFile() file: multer.File,
+  ) {
+    console.log("Inside postimageDto ")
+    const userId = context.req?.user?.sub;
+   const result = await this.authService.upostimage( file, postimageDto.userId!);
 
    return { user : result}
   }

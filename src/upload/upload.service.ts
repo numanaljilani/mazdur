@@ -20,7 +20,7 @@ export class UploadService {
 
     async uploadProfile(filename: string, file: Buffer , ext ?: string) {
         try {
-          const extension = filename?.split('.').pop().toLowerCase() || 'jpg'; 
+          const extension = filename?.split('.')?.pop()?.toLowerCase() || 'jpg'; 
           const dateString = new Date().toISOString().slice(0, 10).replace(/-/g, '');  // YYYYMMDD format
           const randomString = Math.random().toString(36).substring(2, 15); // Random alphanumeric string
           const uniqueName =  `mazdur-${dateString}-${randomString}.${extension}`;
