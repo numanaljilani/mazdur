@@ -27,11 +27,3 @@ export class LoginResponse {
   @Field(() => ErrorType, { nullable: true })
   error?: ErrorType;
 }
-@ObjectType()
-export class ImagesResponse {
-  @Field(() => String , { nullable: true })
-  imageurl: String;
-  @Field(() => User , { nullable: true })
-  user: User;
-
-}

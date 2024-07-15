@@ -22,6 +22,7 @@ export class BookingService {
           time: appointmentDto.time,
           status: 'pending',
         },
+        include: { contractor: true },
       }),
       this.prisma.user.findUnique({
         where: { id: appointmentDto.contractorId },
@@ -134,7 +135,7 @@ lte : endDate
     if (appointmentDto.status == 'pending') {
       const myBooking = await this.prisma.booking.findMany({
         where: {
-           userId,
+          contractorId: userId,
           OR: [
             { status: 'pending' },
             { status: 'upcoming' },
@@ -144,11 +145,10 @@ lte : endDate
         take: appointmentDto.take,
         skip: appointmentDto.skip,
         include: {
-          contractor:true,
-          user:true
+          contractor: true,
         },
       });
-      console.log(myBooking,"Contracor ");
+      console.log(myBooking);
       return myBooking;
     }else if (appointmentDto.status == 'reject' || appointmentDto.status == 'cancel'){
       const myBooking = await this.prisma.booking.findMany({
@@ -163,7 +163,6 @@ lte : endDate
         skip: appointmentDto.skip,
         include: {
           contractor: true,
-          user: true
         },
       });
       console.log(myBooking);
@@ -191,10 +190,6 @@ lte : endDate
         },
         take: appointmentDto.take,
         skip: appointmentDto.skip,
-        include:{
-          user:true,
-          contractor:true
-        }
       });
 
       console.log(myBooking);

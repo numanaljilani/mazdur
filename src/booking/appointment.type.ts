@@ -23,38 +23,10 @@ export class AppointmentsResponse {
     @Field(() => String,{nullable : true})
     userId: string;
 
-    @Field(() => String,{nullable : true})
-    contractorId: String;
-
     @Field(() => ConntractorsResponse,{nullable : true})
     contractor: ConntractorsResponse;
 
 }
-@ObjectType()
-export class ContractorAppointmentsResponse {
-    @Field(() => String)
-    id: string;
-  
-    @Field(() => String,{nullable : true})
-    date : string;
-  
-    @Field(() => String,{nullable : true})
-    time: string;
-  
-    @Field(() => String,{nullable : true})
-    status: String;
-
-  
-    @Field(() => String,{nullable : true})
-    userId: string;
-    @Field(() => User,{nullable : true})
-    user: User;
-
-    @Field(() => ConntractorsResponse,{nullable : true})
-    contractor: ConntractorsResponse;
-
-}
-
 @ObjectType()
 export class AppointmentResponse {
   @Field(() => AppointmentsResponse, { nullable: true }) // Assuming User is another ObjectType you have

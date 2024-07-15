@@ -46,13 +46,11 @@ export class RegisterDto {
 @InputType()
 export class UpdateUserDto {
   @Field()
-  @IsOptional()
-  fullname?: string;
+  @IsNotEmpty({ message: 'Fullname is required.' })
+  @IsString({ message: 'Fullname must be a string.' })
+  fullname: string;
 
 
-  @Field( { nullable: true })
-  @IsOptional()
-  userId?: string;
   @Field( { nullable: true })
   @IsOptional()
   dob?: string;
@@ -78,6 +76,8 @@ export class SocialSignupDto {
   @IsNotEmpty({ message: 'Fullname is required.' })
   @IsString({ message: 'Fullname must be a string.' })
   fullname: string;
+
+
 
   @Field()
   @IsNotEmpty({ message: 'Email is required.' })
@@ -124,15 +124,6 @@ export class RegisterContractorDto {
   about?: string;
 }
 
-
-@InputType()
-export class PostImageDto {
-
-  @Field()
-  @IsNotEmpty({ message: 'userId is required.' })
-  userId: string;
-
-}
 @InputType()
 export class LoginDto {
   @Field()
@@ -149,6 +140,7 @@ export class LoginDto {
   fcmtoken?: string;
 }
 
+
 @InputType()
 export class SocialLoginDto {
   @Field()
@@ -163,11 +155,4 @@ export class SocialLoginDto {
   @Field( { nullable: true })
   @IsOptional()
   fcmtoken?: string;
-}
-@InputType()
-export class contractorImagesDto {
-  @Field()
-  @IsNotEmpty({ message: 'contractorId is required.' })
-  contractorId: string
-
 }

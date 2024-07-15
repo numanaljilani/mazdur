@@ -33,10 +33,8 @@ model User {
   comments       Comment[]
   likes          Like[]
   bookmark       Bookmark[]
-  booking        Booking[] @relation("ContractorBookings")
-  userbooking    Booking[]      @relation("UserBookings")
+  booking        Booking[]
   notifications  Notification[]
-  images Images[]
   history        String[]
   offer          String?        @map("Offers") @db.ObjectId
   bookmarks      String[]
@@ -47,8 +45,8 @@ model User {
   price          String?
   unit           String?
   about          String?
-  rating         Int?           @default(5)
-  rewies         Int?           @default(0)
+  rating         Int? @default(5)
+  rewies         Int? @default(0)
 }
 
 model Post {
@@ -74,20 +72,6 @@ model Bookmark {
   contractor User @relation(fields: [contractorId], references: [id], onDelete: Cascade)
 }
 
-// model Booking {
-//   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-//   userId       String   @map("user_id") @db.ObjectId
-//   contractorId String   @map("user_id") @db.ObjectId
-//   date         DateTime
-//   time         String
-//   status       String
-//   createdAt    DateTime @default(now()) @map("created_at")
-//   updatedAt    DateTime @updatedAt @map("updated_at")
-
-//   contractor User @relation(fields: [contractorId], references: [id], onDelete: Cascade)
-//   user       User @relation(name: "UserBookings", fields: [userId], references: [id], onDelete: Cascade)
-//   // user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-// }
 model Booking {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   userId       String   @map("user_id") @db.ObjectId
@@ -98,8 +82,7 @@ model Booking {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  contractor User @relation(name: "ContractorBookings", fields: [contractorId], references: [id], onDelete: Cascade)
-  user       User @relation(name: "UserBookings", fields: [userId], references: [id], onDelete: Cascade)
+  contractor User @relation(fields: [contractorId], references: [id], onDelete: Cascade)
 }
 
 model Offers {
@@ -111,14 +94,6 @@ model Offers {
   expiry    String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-}
-model Images {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  imageurl     String
-  contractor String?  @map("user_id") @db.ObjectId
-  createdAt DateTime @default(now()) @map("created_at")
-
-  user      User?    @relation(fields: [contractor], references: [id], onDelete: Cascade)
 }
 
 model Notification {
