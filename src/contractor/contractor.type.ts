@@ -46,8 +46,15 @@ export class Contractor {
 
   @Field(() => String, { nullable: true })
   about: string;
+  @Field(() => String, { nullable: true })
+  rating: string;
+
+  @Field(() => String, { nullable: true })
+  rewies: string;
   
 }
+// rating: 3,
+// rewies: 6
 @ObjectType()
 export class ConntractorsResponse {
   @Field()
@@ -74,7 +81,13 @@ export class ConntractorsResponse {
   isBookmark: boolean;
   
   @Field(() => String, { nullable: true })
-  unit: string;  
+  unit: string; 
+  
+  @Field(() => String, { nullable: true })
+  rating: string;
+
+  @Field(() => String, { nullable: true })
+  rewies: string;
 }
 
 @ObjectType()

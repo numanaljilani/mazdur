@@ -23,6 +23,14 @@ export class AppointmentsResponse {
     @Field(() => String,{nullable : true})
     userId: string;
 
+
+    @Field(() => String,{nullable : true})
+    contractorId: String;
+    @Field(() => String,{nullable : true})
+    rating: String;
+    @Field(() => String,{nullable : true})
+    rewies: String;
+
     @Field(() => ConntractorsResponse,{nullable : true})
     contractor: ConntractorsResponse;
 
@@ -37,3 +45,27 @@ export class AppointmentResponse {
 }
 
 
+@ObjectType()
+export class ContractorAppointmentsResponse {
+    @Field(() => String)
+    id: string;
+
+    @Field(() => String,{nullable : true})
+    date : string;
+
+    @Field(() => String,{nullable : true})
+    time: string;
+
+    @Field(() => String,{nullable : true})
+    status: String;
+
+
+    @Field(() => String,{nullable : true})
+    userId: string;
+    @Field(() => User,{nullable : true})
+    user: User;
+
+    @Field(() => ConntractorsResponse,{nullable : true})
+    contractor: ConntractorsResponse;
+
+}

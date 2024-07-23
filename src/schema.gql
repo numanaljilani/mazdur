@@ -24,8 +24,11 @@ type AppointmentResponse {
 
 type AppointmentsResponse {
   contractor: ConntractorsResponse
+  contractorId: String
   date: String
   id: String!
+  rating: String
+  rewies: String
   status: String
   time: String
   userId: String
@@ -53,6 +56,8 @@ type ConntractorsResponse {
   image: String
   isBookmark: Boolean
   price: String
+  rating: String
+  rewies: String
   service: String
   subService: [String!]
   unit: String
@@ -70,9 +75,21 @@ type Contractor {
   nikname: String
   phone: String
   price: String
+  rating: String
+  rewies: String
   service: String
   subService: [String!]
   unit: String
+}
+
+type ContractorAppointmentsResponse {
+  contractor: ConntractorsResponse
+  date: String
+  id: String!
+  status: String
+  time: String
+  user: User
+  userId: String
 }
 
 input ContractorDetailsDto {
@@ -102,6 +119,11 @@ type ErrorType {
   message: String!
 }
 
+type ImagesResponse {
+  imageurl: String
+  user: User
+}
+
 input LoginDto {
   email: String!
   fcmtoken: String
@@ -120,13 +142,14 @@ type Mutation {
   bookAppointment(appointmentInput: AppointmentDto!): AppointmentResponse!
   cancelAppointment(cancelAppointmentInput: CancelAppointmentDto!): AppointmentResponse!
   completeAppointment(completeAppointmentInput: CancelAppointmentDto!): AppointmentResponse!
-  contractorAppointment(contractorAppointmentInput: MyAppointmentDto!): [AppointmentsResponse!]!
+  contractorAppointment(contractorAppointmentInput: MyAppointmentDto!): [ContractorAppointmentsResponse!]!
   contractorDetails(contractorDetailsInput: ContractorDetailsDto!): conntractorResponse!
   createContractor(contractorInput: RegisterContractorDto!): conntractorResponse!
   createOffer(offerInput: CreateOfferDto!): createOfferResponse!
   createPost(postInput: PostDto!): PostType!
   getContractor(getContractorInput: ContractorsDto!): [ConntractorsResponse!]!
   getPosts(getPostsInput: getPostDto!): [PostType!]!
+  images(imagesInput: contractorImagesDto!): [ImagesResponse!]!
   login(loginInput: LoginDto!): LoginResponse!
   me: LoginResponse!
   myAppointment(myAppointmentInput: MyAppointmentDto!): [AppointmentsResponse!]!
@@ -183,7 +206,7 @@ input PostDto {
 
 type PostType {
   createdAt: String
-  rating: String!
+  rating: String
   text: String
   user: User
 }
@@ -234,7 +257,9 @@ type User {
   nikname: String
   password: String!
   phone: String
+  rating: String
   refreshToken: String
+  rewies: String
   updatedAt: DateTime!
 }
 
@@ -242,6 +267,10 @@ type conntractorResponse {
   contractor: Contractor
   error: ErrorType
   user: User
+}
+
+input contractorImagesDto {
+  contractorId: String!
 }
 
 type createOfferResponse {

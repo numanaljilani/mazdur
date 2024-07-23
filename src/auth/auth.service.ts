@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma.service';
 import {
+  contractorImagesDto,
   LoginDto,
   RegisterContractorDto,
   RegisterDto,
@@ -295,11 +296,12 @@ export class AuthService {
       throw new Error(error.message); // Provide a proper error response
     }
   }
+
+  async forgetPassword(){}
   async updateuser(registerDto: UpdateUserDto, userId , image?: any,): Promise<any> {
     console.log('UpdateUserDto!!!', registerDto);
     try {
       const data = {
-        fullname: registerDto.fullname
       };
 
       if (image) {
@@ -309,6 +311,9 @@ export class AuthService {
           data['image'] = await s3res?.Key;
         }
         console.log(s3res.Key, '>>>>>>');
+      }
+      if(registerDto.fullname){
+        data['fullname'] =  registerDto.fullname
       }
 
       if (registerDto.nikname) {
@@ -331,7 +336,7 @@ export class AuthService {
 
       const user = await this.prisma.user.update({
         where : {
-          id : userId,
+          id : registerDto.userId,
         },
         data
       })
@@ -463,5 +468,43 @@ export class AuthService {
     }
 
     return this.issueTokens(user); // Issue tokens on login
+  }
+
+  async upostimage(image: any, userId): Promise<any> {
+    console.log(image,'postimageDto!!!');
+
+    try {
+      let imageurl;
+      const {  buffer } = image;
+      const s3res = await this.s3Service.uploadProfile(image.originalname || "image.jpg", buffer);
+      if (s3res) {
+        imageurl = await s3res?.Key;
+      }
+      console.log(s3res.Key, '>>>>>>');
+
+      const postimg = await this.prisma.images.create({
+        data: { imageurl: imageurl, contractor: userId },
+      });
+
+      return { status: 200, message: 'image uploaded' };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async images(imagesInput : contractorImagesDto) {
+    const images = await this.prisma.images.findMany({
+      where: {
+        contractor: imagesInput.contractorId,
+      },
+      include:{
+        user:true
+      }
+    });
+    console.log(images, 'after images');
+    // throw Error("User not found")
+    // Provide a proper error response
+
+    return images; // Issue tokens on login
   }
 }

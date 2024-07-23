@@ -25,14 +25,16 @@ export class PostService {
         userId,
       },
     });
-    if (postExist) return postExist;
+    // if (postExist) return postExist;
 
     if (postInputDto.text) {
       data['text'] = postInputDto.text;
     }
 const findcontractor = await this.prisma.user.findUnique({where : {id : postInputDto.contractorId}})
-const avgRating = (Number(findcontractor.rating) + Number(postInputDto.rating))/2
-    const [post, user, contractor] = await Promise.all([
+const avgRating = (Number(findcontractor.rating || 5) + Number(postInputDto.rating))/2
+const review = Number(findcontractor.rewies || 1) + 1
+console.log(avgRating , review , "????????")
+    const [post, user, contractor , update] = await Promise.all([
       this.prisma.post.create({
         data,
       }),
@@ -43,16 +45,18 @@ const avgRating = (Number(findcontractor.rating) + Number(postInputDto.rating))/
           id: postInputDto.contractorId,
         },
         data: {
-          rating : avgRating
+          rating : avgRating,
+          rewies : review
 
         },
       }),
     ]);
+
     await Promise.all([
       this.notificationService.createNotification(
         {
           title: 'Thank you!',
-          desc: `thanks for posting your valuable review on  ${contractor.fullname}.`,
+          desc: `thanks for posting your valuable review on  ${user.fullname}.`,
           broadcast: false,
           type: 'user',
         },
@@ -62,12 +66,12 @@ const avgRating = (Number(findcontractor.rating) + Number(postInputDto.rating))/
       this.notificationService.createNotification(
         {
           title: 'Some one has post a review!',
-          desc: ` ${user.fullname} post a review on your service.`,
+          desc: ` ${contractor.fullname} post a review on your service.`,
           broadcast: false,
           type: 'user',
         },
         userId,
-        user?.fcmtoken,
+        contractor?.fcmtoken,
       ),
     ]);
 
@@ -83,8 +87,11 @@ const avgRating = (Number(findcontractor.rating) + Number(postInputDto.rating))/
       include: {
         user: true,
       },
+      orderBy:{
+        createdAt : 'desc'
+      }
+      
     });
-
     return posts;
   }
 }

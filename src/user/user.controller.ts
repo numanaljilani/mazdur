@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from './user.service';
-import { RegisterContractorDto, RegisterDto, UpdateUserDto } from 'src/auth/dto';
+import { PostImageDto, RegisterContractorDto, RegisterDto, UpdateUserDto } from 'src/auth/dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Args, Context } from '@nestjs/graphql';
 import * as multer from 'multer';
@@ -57,4 +57,19 @@ export class UserController {
 
    return { user : result}
   }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('postimage')
+  async postimage(
+    @Body() postimageDto: PostImageDto,
+    @Context() context: { req: Response | any },
+    @UploadedFile() file: multer.File,
+  ) {
+    console.log("Inside postimageDto ")
+    const userId = context.req?.user?.sub;
+   const result = await this.authService.upostimage( file, postimageDto.userId!);
+
+   return { user : result}
+  }
+
 }

@@ -35,6 +35,11 @@ export class User {
   @Field()
   password: string;
 
+  @Field(() => String,{nullable : true})
+  rating: String;
+  @Field(() => String,{nullable : true})
+  rewies: String;
+
   @Field({nullable : true})
   accessToken?: string;
 

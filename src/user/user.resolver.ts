@@ -1,8 +1,8 @@
 import { Args, Context, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from './user.service';
-import { LoginResponse, RegisterResponse } from 'src/auth/types';
-import { LoginDto, RegisterDto, SocialLoginDto, SocialSignupDto } from 'src/auth/dto';
+import { ImagesResponse, LoginResponse, RegisterResponse } from 'src/auth/types';
+import { contractorImagesDto, LoginDto, RegisterDto, SocialLoginDto, SocialSignupDto } from 'src/auth/dto';
 import { User } from './user.model';
 import { UseGuards } from '@nestjs/common';
 import { GraphqlAuthGuard } from 'src/auth/auth.guard';
@@ -76,6 +76,18 @@ export class UserResolver {
   ) {
     const userId = context.req?.user?.sub;
     return this.authService.me(userId);
+  }
+
+
+  @Mutation(() => [ImagesResponse]) // Adjust this return type as needed
+  @UseGuards(GraphqlAuthGuard)
+  async images(
+    @Context() context: { req: Response | any },
+    @Args('imagesInput') imagesInput: contractorImagesDto,
+
+  ) {
+    const userId = context.req?.user?.sub;
+    return this.authService.images(imagesInput);
   }
 
 

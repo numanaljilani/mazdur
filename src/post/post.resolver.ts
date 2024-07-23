@@ -17,7 +17,6 @@ export class PostResolver {
       @Args('postInput') postInputDto: PostDto,
       @Context() context: { req: Response | any },
     ) {
-      console.log(postInputDto)
       const userId = context.req?.user?.sub;
       return this.postService.createPost(postInputDto , userId);
     }
@@ -28,7 +27,7 @@ export class PostResolver {
       @Args('getPostsInput') getPostInputDto: getPostDto,
       @Context() context: { req: Response | any },
     ) {
-      console.log(getPostInputDto)
+    
       const userId = context.req?.user?.sub;
       return this.postService.getPost(getPostInputDto);
     }

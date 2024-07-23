@@ -33,8 +33,10 @@ model User {
   comments       Comment[]
   likes          Like[]
   bookmark       Bookmark[]
-  booking        Booking[]
+   booking        Booking[] @relation("ContractorBookings")
+  userbooking    Booking[]      @relation("UserBookings")
   notifications  Notification[]
+  images Images[]
   history        String[]
   offer          String?        @map("Offers") @db.ObjectId
   bookmarks      String[]
@@ -82,7 +84,8 @@ model Booking {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  contractor User @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+contractor User @relation(name: "ContractorBookings", fields: [contractorId], references: [id], onDelete: Cascade)
+  user       User @relation(name: "UserBookings", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Offers {
@@ -129,6 +132,14 @@ model Like {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([userId, postId])
+}
+
+model Images {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  imageurl     String
+  contractor String?  @map("user_id") @db.ObjectId
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User?    @relation(fields: [contractor], references: [id], onDelete: Cascade)
 }
 
 // https://mazdur-ae769.firebaseapp.com/__/auth/handler

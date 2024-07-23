@@ -5,7 +5,7 @@ import { User } from 'src/user/user.model';
 @ObjectType()
 export class PostType {
 
-  @Field()
+  @Field(() => String, { nullable: true })
   rating?: string;
 
   @Field(() => String, { nullable: true })

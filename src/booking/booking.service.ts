@@ -145,7 +145,8 @@ lte : endDate
         take: appointmentDto.take,
         skip: appointmentDto.skip,
         include: {
-          contractor: true,
+          contractor:true,
+          user:true
         },
       });
       console.log(myBooking);
@@ -162,7 +163,8 @@ lte : endDate
         take: appointmentDto.take,
         skip: appointmentDto.skip,
         include: {
-          contractor: true,
+          contractor:true,
+          user:true
         },
       });
       console.log(myBooking);
@@ -170,7 +172,7 @@ lte : endDate
     } else if(appointmentDto.status == 'completed'){
       const myBooking = await this.prisma.booking.findMany({
         where: {
-          contractorId: userId,
+           userId,
           OR: [
             { status: 'completed' },
           ],
@@ -178,7 +180,8 @@ lte : endDate
         take: appointmentDto.take,
         skip: appointmentDto.skip,
         include: {
-          contractor: true,
+          contractor:true,
+          user:true
         },
       });
       console.log(myBooking);
@@ -190,6 +193,10 @@ lte : endDate
         },
         take: appointmentDto.take,
         skip: appointmentDto.skip,
+        include:{
+          contractor:true,
+          user:true
+        }
       });
 
       console.log(myBooking);
