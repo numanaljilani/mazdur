@@ -15,7 +15,7 @@ export class NotificationResolver {
       @Args('notificationInput') myNotificationsDto: MyNotificationsDto,
       @Context() context: { req: Response | any },
     ) {
-      console.log(myNotificationsDto);
+      
       const userId = context.req?.user?.sub;
       return this.notificationService.myNotifications(myNotificationsDto, userId);
     }

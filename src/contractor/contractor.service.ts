@@ -5,8 +5,9 @@ import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class ContractorService {
-  constructor(private readonly prisma: PrismaService,
-    private readonly notificationService : NotificationService
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
   ) {}
   async createContractor(registerContractorDto, userId) {
     const contractor = await this.prisma.user.update({
@@ -19,7 +20,7 @@ export class ContractorService {
         price: registerContractorDto.price,
       },
     });
-    await this.notificationService.sendNotification()
+    await this.notificationService.sendNotification();
     console.log(contractor, ' updated data');
     return {
       contractor,
@@ -28,13 +29,28 @@ export class ContractorService {
   }
 
   async getContractors(contractorsDto, userId) {
-    const contractors = await this.prisma.user.findMany({
-      where: {
-        service: contractorsDto.service,
-      },
-      take: contractorsDto.take,
-      skip: contractorsDto.skip,
-    });
+    let contractors;
+    console.log("finding contractors" , contractorsDto)
+    if (contractorsDto.subService) {
+      contractors = await this.prisma.user.findMany({
+        where: {
+          service: contractorsDto.service,
+          subService: {
+            has: contractorsDto.subService, // Checks if the single string exists in the array
+          },
+        },
+        take: contractorsDto.take,
+        skip: contractorsDto.skip,
+      });
+    } else {
+      contractors = await this.prisma.user.findMany({
+        where: {
+          service: contractorsDto.service,
+        },
+        take: contractorsDto.take,
+        skip: contractorsDto.skip,
+      });
+    }
     // console.log(contractors, 'contractors');
     const myBookmarks = await this.prisma.bookmark.findMany({
       where: {
@@ -46,10 +62,10 @@ export class ContractorService {
       const isBookmark = myBookmarks.some(
         (bookmark) => bookmark.contractorId == contractor.id,
       );
-      console.log(isBookmark,">>>>>>>>>>>>> bookedmarks")
+      console.log(isBookmark, '>>>>>>>>>>>>> bookedmarks');
       return {
         ...contractor,
-        isBookmark : isBookmark,
+        isBookmark: isBookmark,
       };
     });
     // console.log(fliteredContractors, 'fliteredContractors');

@@ -4,7 +4,6 @@ import { IsNotEmpty, IsOptional } from 'class-validator';
 @InputType()
 export class ContractorDto {
 
-
   @Field(() => String)
   @IsNotEmpty({ message: 'Category is required' })
   category : string;

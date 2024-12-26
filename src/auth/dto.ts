@@ -11,7 +11,7 @@ export class RegisterDto {
 
   @Field()
   @IsNotEmpty({ message: 'Password is required.' })
-  @MinLength(8, { message: 'Password must be at least 8 characters.' })
+  @MinLength(4, { message: 'Password must be at least 4 characters.' })
   password: string;
 
 
@@ -155,7 +155,6 @@ export class LoginDto {
 export class SocialLoginDto {
   @Field()
   @IsNotEmpty({ message: 'Email is required.' })
-  @IsEmail({}, { message: 'Email must be valid.' })
   email: string;
 
   @Field()
@@ -172,5 +171,34 @@ export class contractorImagesDto {
   @Field()
   @IsNotEmpty({ message: 'contractorId is required.' })
   contractorId: string
+
+}
+@InputType()
+export class resetPasswordRequestDto {
+  @Field()
+  @IsNotEmpty({ message: 'Email is required.' })
+  email: string
+
+}
+@InputType()
+export class verifyOTPDto {
+  @Field()
+  @IsNotEmpty({ message: 'OTP is required.' })
+  otp: string
+
+  @Field()
+  @IsNotEmpty({ message: 'Email is required.' })
+  email: string
+
+}
+@InputType()
+export class resetPasswordDto {
+  @Field()
+  @IsNotEmpty({ message: 'OTP is required.' })
+  email: string
+
+  @Field()
+  @IsNotEmpty({ message: 'Email is required.' })
+  password: string
 
 }

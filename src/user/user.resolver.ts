@@ -1,8 +1,8 @@
 import { Args, Context, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from './user.service';
-import { ImagesResponse, LoginResponse, RegisterResponse } from 'src/auth/types';
-import { contractorImagesDto, LoginDto, RegisterDto, SocialLoginDto, SocialSignupDto } from 'src/auth/dto';
+import { ImagesResponse, LoginResponse, RegisterResponse, resetPasswordRequestResponse, resetPasswordResponse, VerifyOTPResponse } from 'src/auth/types';
+import { contractorImagesDto, LoginDto, RegisterDto, resetPasswordDto, resetPasswordRequestDto, SocialLoginDto, SocialSignupDto, verifyOTPDto } from 'src/auth/dto';
 import { User } from './user.model';
 import { UseGuards } from '@nestjs/common';
 import { GraphqlAuthGuard } from 'src/auth/auth.guard';
@@ -53,11 +53,33 @@ export class UserResolver {
   ) {
     return this.authService.login(loginDto, context.res);
   }
+  @Mutation(() => resetPasswordRequestResponse) // Adjust this return type as needed
+  async resetpasswordRequest(
+    @Args('resetPasswordRequestInput') resetpasswordRequestDto: resetPasswordRequestDto,
+    
+  ) {
+    return this.authService.resetPasswordRequest(resetpasswordRequestDto);
+  }
+  @Mutation(() => VerifyOTPResponse) // Adjust this return type as needed
+  async verifyOtp(
+    @Args('verifyOtpInput') verifyOTPDto: verifyOTPDto,
+    
+  ) {
+    return this.authService.verifyOtp(verifyOTPDto);
+  }
+  @Mutation(() => resetPasswordResponse) // Adjust this return type as needed
+  async resetPassword(
+    @Args('resetPassword') resetPasswordDto: resetPasswordDto,
+    
+  ) {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
   @Mutation(() => LoginResponse) // Adjust this return type as needed
   async sociaSignup(
     @Args('socialSignupInput') socialSignupDto: SocialSignupDto,
     @Context() context: { res: Response },
   ) {
+    console.log("first")
     return this.authService.socialSignup(socialSignupDto, context.res);
   }
   @Mutation(() => LoginResponse) // Adjust this return type as needed

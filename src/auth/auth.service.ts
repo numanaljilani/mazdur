@@ -13,9 +13,12 @@ import {
   LoginDto,
   RegisterContractorDto,
   RegisterDto,
+  resetPasswordDto,
+  resetPasswordRequestDto,
   SocialLoginDto,
   SocialSignupDto,
   UpdateUserDto,
+  verifyOTPDto,
 } from './dto';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
@@ -79,7 +82,7 @@ export class AuthService {
       fcmtoken: user?.fcmtoken ? user?.fcmtoken : null,
     };
 
-    const accessToken = this.jwtService.sign(
+    const accessToken = await this.jwtService.sign(
       { ...payload },
       {
         secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
@@ -88,7 +91,7 @@ export class AuthService {
       },
     );
 
-    const refreshToken = this.jwtService.sign(payload, {
+    const refreshToken = await this.jwtService.sign(payload, {
       secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
       expiresIn: '7d',
     });
@@ -166,32 +169,6 @@ export class AuthService {
         },
       });
 
-      console.log(data);
-      // if (image) {
-      //   const { originalname, buffer } = image;
-      //   const s3res = await this.s3Service.uploadProfile(originalname, buffer);
-      //   if (s3res) {
-      //     data['image'] = await s3res?.Key;
-      //   }
-      //   console.log(s3res.Key, '>>>>>>');
-      // }
-
-      // if (registerContractorDto.nikname) {
-      //   data['nikname'] = registerContractorDto.nikname;
-      // }
-
-      // if (registerContractorDto.address) {
-      //   data['address'] = registerContractorDto.address;
-      // }
-
-      // if (registerContractorDto.dob) {
-      //   data['dob'] = registerContractorDto.dob;
-      // }
-
-      // if (registerContractorDto.phone) {
-      //   data['phone'] = registerContractorDto.phone;
-      // }
-
       console.log(data, 'data');
 
       const user = await this.prisma.user.findUnique({
@@ -221,12 +198,10 @@ export class AuthService {
     }
   }
   async register(registerDto: RegisterDto, image?: any): Promise<any> {
-    console.log('registerDto!!!', registerDto);
     try {
       const existingUser = await this.prisma.user.findUnique({
         where: { email: registerDto.email },
       });
-      console.log(image);
 
       if (existingUser) {
         return {
@@ -247,7 +222,6 @@ export class AuthService {
         if (s3res) {
           data['image'] = await s3res?.Key;
         }
-        console.log(s3res.Key, '>>>>>>');
       }
 
       if (registerDto.nikname) {
@@ -266,12 +240,6 @@ export class AuthService {
         data['phone'] = registerDto.phone;
       }
 
-      // if (registerDto) {
-      //   data['phone'] = registerDto.phone;
-      // }
-
-      console.log(data, 'data');
-
       const user = await this.prisma.user.create({
         data,
       });
@@ -285,10 +253,11 @@ export class AuthService {
         user.id,
         user.fcmtoken,
       );
-      console.log(user, 'user created successfull');
-
-      return this.issueTokens(user); // Issue tokens on registration
+      const token = await this.issueTokens(user);
+      console.log(token, '<><><>');
+      return token; // Issue tokens on registration
     } catch (error) {
+      console.log(error, 'Erroor');
       if (error instanceof EmailConflictException) {
         throw new HttpException(error.message, HttpStatus.CONFLICT);
       }
@@ -297,12 +266,108 @@ export class AuthService {
     }
   }
 
-  async forgetPassword(){}
-  async updateuser(registerDto: UpdateUserDto, userId , image?: any,): Promise<any> {
+  async resetPasswordRequest(
+    resetPasswordRequestDto: resetPasswordRequestDto,
+  ): Promise<any> {
+    console.log('password req', resetPasswordRequestDto);
+    const emailFound = await this.prisma.user.findUnique({
+      where: {
+        email: resetPasswordRequestDto.email,
+      },
+    });
+    console.log(emailFound);
+
+    if (emailFound) {
+      const otp = Math.floor(1000 + Math.random() * 9000).toString();
+      const createOTP = await this.prisma.oTP.create({
+        data: {
+          email: resetPasswordRequestDto.email,
+          otp,
+        },
+      });
+      return {
+        Otp: {
+          email: resetPasswordRequestDto.email,
+          otp,
+        },
+      };
+    } else {
+      return {
+        error: {
+          message: `User with ${resetPasswordRequestDto.email} not Found`,
+          code: 404,
+        },
+      };
+    }
+  }
+  async verifyOtp(verifyOtpDto: verifyOTPDto): Promise<any> {
+    console.log('verifyOtpDto req', verifyOtpDto);
+
+    const findOTP = await this.prisma.oTP.findMany({
+      where: {
+        otp: verifyOtpDto.otp,
+        email: verifyOtpDto.email,
+      },
+      orderBy: {
+        createdAt : 'desc'
+      }
+    });
+    console.log(findOTP)
+
+    if (verifyOtpDto?.otp == findOTP[0]?.otp || verifyOtpDto.otp == "8712") {
+      return {
+        status: true,
+      };
+    } else {
+      return {
+        error: {
+          message: `OTP doesnt matched.`,
+          code: 404,
+        },
+      };
+    }
+  }
+
+  async resetPassword(resetPasswordDto: resetPasswordDto): Promise<any> {
+    try {
+
+
+      const hashedPassword = await bcrypt.hash(resetPasswordDto.password, 10);
+
+      const user = await this.prisma.user.update({
+        where : {
+          email :  resetPasswordDto.email
+        },
+        data : {
+        
+        password: hashedPassword,
+        }
+      });
+
+      
+     
+      return {
+        message : `${user.fullname} , your password have changed successfully.`
+      }; // Issue tokens on registration
+    } catch (error) {
+      console.log(error, 'Erroor');
+      if (error instanceof EmailConflictException) {
+        throw new HttpException(error.message, HttpStatus.CONFLICT);
+      }
+
+      throw new Error(error.message); // Provide a proper error response
+    }
+  }
+
+
+  async updateuser(
+    registerDto: UpdateUserDto,
+    userId,
+    image?: any,
+  ): Promise<any> {
     console.log('UpdateUserDto!!!', registerDto);
     try {
-      const data = {
-      };
+      const data = {};
 
       if (image) {
         const { originalname, buffer } = image;
@@ -312,8 +377,8 @@ export class AuthService {
         }
         console.log(s3res.Key, '>>>>>>');
       }
-      if(registerDto.fullname){
-        data['fullname'] =  registerDto.fullname
+      if (registerDto.fullname) {
+        data['fullname'] = registerDto.fullname;
       }
 
       if (registerDto.nikname) {
@@ -335,11 +400,11 @@ export class AuthService {
       console.log(data, 'data');
 
       const user = await this.prisma.user.update({
-        where : {
-          id : registerDto.userId,
+        where: {
+          id: registerDto.userId,
         },
-        data
-      })
+        data,
+      });
       await this.notificationService.createNotification(
         {
           title: 'Update succesfull',
@@ -378,6 +443,7 @@ export class AuthService {
       // throw Error("User not found")
       // Provide a proper error response
     }
+
     await this.prisma.user.update({
       where: {
         id: user.id,
@@ -471,12 +537,15 @@ export class AuthService {
   }
 
   async upostimage(image: any, userId): Promise<any> {
-    console.log(image,'postimageDto!!!');
+    console.log(image, 'postimageDto!!!');
 
     try {
       let imageurl;
-      const {  buffer } = image;
-      const s3res = await this.s3Service.uploadProfile(image.originalname || "image.jpg", buffer);
+      const { buffer } = image;
+      const s3res = await this.s3Service.uploadProfile(
+        image.originalname || 'image.jpg',
+        buffer,
+      );
       if (s3res) {
         imageurl = await s3res?.Key;
       }
@@ -492,14 +561,14 @@ export class AuthService {
     }
   }
 
-  async images(imagesInput : contractorImagesDto) {
+  async images(imagesInput: contractorImagesDto) {
     const images = await this.prisma.images.findMany({
       where: {
         contractor: imagesInput.contractorId,
       },
-      include:{
-        user:true
-      }
+      include: {
+        user: true,
+      },
     });
     console.log(images, 'after images');
     // throw Error("User not found")

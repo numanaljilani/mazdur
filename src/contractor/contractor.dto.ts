@@ -33,6 +33,10 @@ export class ContractorsDto {
   @IsNotEmpty({ message: 'Service name is required' })
   service: string;
 
+  @Field()
+  @IsOptional()
+  subService: string;
+
   @Field({nullable : true , defaultValue : 0})
   @IsOptional()
   skip : number;

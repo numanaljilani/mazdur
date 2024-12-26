@@ -99,6 +99,7 @@ input ContractorDetailsDto {
 input ContractorsDto {
   service: String!
   skip: Float = 0
+  subService: String!
   take: Float = 20
 }
 
@@ -157,9 +158,12 @@ type Mutation {
   myBookmark(contractors: ContractorsDto!): [BookmarkConntractorsResponse!]!
   myNotifications(notificationInput: MyNotificationsDto!): [MyNotificationResponse!]!
   rejectAppointment(rejectAppointmentInput: CancelAppointmentDto!): AppointmentResponse!
+  resetPassword(resetPassword: resetPasswordDto!): resetPasswordResponse!
+  resetpasswordRequest(resetPasswordRequestInput: resetPasswordRequestDto!): resetPasswordRequestResponse!
   searchContractor(searchContractorInput: SearchContractorsDto!): [ConntractorsResponse!]!
   sociaSignup(socialSignupInput: SocialSignupDto!): LoginResponse!
   socialLogin(socialLoginInput: SocialLoginDto!): LoginResponse!
+  verifyOtp(verifyOtpInput: verifyOTPDto!): VerifyOTPResponse!
 }
 
 input MyAppointmentByDateDto {
@@ -195,6 +199,13 @@ type Offers {
   percent: String!
   promo: String!
   title: String!
+}
+
+type Otp {
+  createdAt: DateTime!
+  email: String!
+  otp: String!
+  updatedAt: DateTime!
 }
 
 input PostDto {
@@ -263,6 +274,11 @@ type User {
   updatedAt: DateTime!
 }
 
+type VerifyOTPResponse {
+  error: ErrorType
+  status: Boolean
+}
+
 type conntractorResponse {
   contractor: Contractor
   error: ErrorType
@@ -282,4 +298,28 @@ input getPostDto {
   contractorId: String!
   skip: Float
   take: Float
+}
+
+input resetPasswordDto {
+  email: String!
+  password: String!
+}
+
+input resetPasswordRequestDto {
+  email: String!
+}
+
+type resetPasswordRequestResponse {
+  Otp: Otp
+  error: ErrorType
+}
+
+type resetPasswordResponse {
+  error: ErrorType
+  message: String
+}
+
+input verifyOTPDto {
+  email: String!
+  otp: String!
 }

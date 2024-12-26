@@ -33,10 +33,10 @@ model User {
   comments       Comment[]
   likes          Like[]
   bookmark       Bookmark[]
-   booking        Booking[] @relation("ContractorBookings")
+  booking        Booking[]      @relation("ContractorBookings")
   userbooking    Booking[]      @relation("UserBookings")
   notifications  Notification[]
-  images Images[]
+  images         Images[]
   history        String[]
   offer          String?        @map("Offers") @db.ObjectId
   bookmarks      String[]
@@ -47,8 +47,8 @@ model User {
   price          String?
   unit           String?
   about          String?
-  rating         Int? @default(5)
-  rewies         Int? @default(0)
+  rating         Int?           @default(5)
+  rewies         Int?           @default(0)
 }
 
 model Post {
@@ -62,6 +62,14 @@ model Post {
   updatedAt    DateTime  @updatedAt @map("updated_at")
   comments     Comment[]
   likes        Like[]
+}
+
+model OTP {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String
+  otp       String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 }
 
 model Bookmark {
@@ -84,7 +92,7 @@ model Booking {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-contractor User @relation(name: "ContractorBookings", fields: [contractorId], references: [id], onDelete: Cascade)
+  contractor User @relation(name: "ContractorBookings", fields: [contractorId], references: [id], onDelete: Cascade)
   user       User @relation(name: "UserBookings", fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -135,11 +143,11 @@ model Like {
 }
 
 model Images {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  imageurl     String
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  imageurl   String
   contractor String?  @map("user_id") @db.ObjectId
-  createdAt DateTime @default(now()) @map("created_at")
-  user      User?    @relation(fields: [contractor], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User?    @relation(fields: [contractor], references: [id], onDelete: Cascade)
 }
 
 // https://mazdur-ae769.firebaseapp.com/__/auth/handler

@@ -24,14 +24,16 @@ export class UserController {
   ) {}
 
   @UseInterceptors(FileInterceptor('file'))
-  @Post()
+  @Post("/")
   async registerUser(
     @UploadedFile() file: multer.File,
     @Body() registerDto: RegisterDto,
   ) {
-   const result = await this.authService.register(registerDto , file);
 
-   return { user : result}
+   const user = await this.authService.register(registerDto , file);
+   console.log(user , "return")
+
+   return  user 
   }
   @UseInterceptors(FileInterceptor('file'))
   @Post('register-contractor')
@@ -41,6 +43,7 @@ export class UserController {
   ) {
     console.log("Inside registerContractorDto ")
    const result = await this.authService.registerContractor(registerContractorDto , file);
+   console.log(result , "result ><><><><><><><")
 
    return { user : result}
   }
