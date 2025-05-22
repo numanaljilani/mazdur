@@ -10,6 +10,7 @@ export class ContractorService {
     private readonly notificationService: NotificationService,
   ) {}
   async createContractor(registerContractorDto, userId) {
+    console.log(registerContractorDto , "registerContractorDto")
     const contractor = await this.prisma.user.update({
       where: { id: userId },
       data: {

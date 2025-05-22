@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import * as firebase from 'firebase-admin';
-import * as serviceAccountKey from './serviceAccountKey.json';
+// import * as serviceAccountKey from './serviceAccountKey.json';
 
 @Injectable()
 export class FirebaseService implements OnModuleInit {
@@ -9,11 +9,11 @@ export class FirebaseService implements OnModuleInit {
   onModuleInit() {
     try {
       if (!FirebaseService.firebaseApp) {
-        FirebaseService.firebaseApp = firebase.initializeApp({
-          credential: firebase.credential.cert(
-            serviceAccountKey as firebase.ServiceAccount,
-          ),
-        });
+        // FirebaseService.firebaseApp = firebase.initializeApp({
+        //   credential: firebase.credential.cert(
+        //     serviceAccountKey as firebase.ServiceAccount,
+        //   ),
+        // });
         console.log('Firebase App Initialized');
       }
     } catch (error) {

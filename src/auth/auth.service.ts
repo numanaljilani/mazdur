@@ -107,9 +107,8 @@ export class AuthService {
   }
 
   async validateUser(loginDto: LoginDto): Promise<any> {
-    const user = await this.prisma.user.findUnique({
-      where: { email: loginDto.email },
-    });
+    const user = await this.prisma.user.findUnique({where : { email : 'numann@gmail.com'}})
+    console.log(loginDto , "VAlidate")
 
     if (user && (await bcrypt.compare(loginDto.password, user.password))) {
       await this.prisma.user.update({
@@ -136,7 +135,7 @@ export class AuthService {
       });
       const data = {
         service: registerContractorDto.service,
-        subService: registerContractorDto.subServices,
+        subService: registerContractorDto?.subServices.split(','),
         price: registerContractorDto.price,
         unit: registerContractorDto.unit,
         isContractor: true,
@@ -144,17 +143,17 @@ export class AuthService {
       if (registerContractorDto.about) {
         data['about'] = registerContractorDto.about;
       }
+// aws
+      // if (image) {
+      //   const { originalname, buffer } = image;
+      //   const s3res = await this.s3Service.uploadProfile(originalname, buffer);
+      //   if (s3res) {
+      //     data['image'] = await s3res?.Key;
+      //   }
+      //   console.log(s3res.Key, '>>>>>>');
+      // }
 
-      if (image) {
-        const { originalname, buffer } = image;
-        const s3res = await this.s3Service.uploadProfile(originalname, buffer);
-        if (s3res) {
-          data['image'] = await s3res?.Key;
-        }
-        console.log(s3res.Key, '>>>>>>');
-      }
-
-      console.log(registerContractorDto.price);
+      console.log(registerContractorDto);
       const updateProfile = await this.prisma.user.update({
         where: {
           id: payload.sub,
@@ -163,13 +162,13 @@ export class AuthService {
           isContractor: true,
           price: registerContractorDto.price,
           service: registerContractorDto.service,
-          subService: [`${registerContractorDto.subServices}`],
+          subService: registerContractorDto?.subServices?.split(','),
           about: registerContractorDto.about,
           unit: registerContractorDto.unit,
         },
       });
 
-      console.log(data, 'data');
+     
 
       const user = await this.prisma.user.findUnique({
         where: {
@@ -219,9 +218,10 @@ export class AuthService {
       if (image) {
         const { originalname, buffer } = image;
         const s3res = await this.s3Service.uploadProfile(originalname, buffer);
-        if (s3res) {
-          data['image'] = await s3res?.Key;
-        }
+        // aws
+        // if (s3res) {
+        //   data['image'] = await s3res?.Key;
+        // }
       }
 
       if (registerDto.nikname) {
@@ -368,15 +368,15 @@ export class AuthService {
     console.log('UpdateUserDto!!!', registerDto);
     try {
       const data = {};
-
-      if (image) {
-        const { originalname, buffer } = image;
-        const s3res = await this.s3Service.uploadProfile(originalname, buffer);
-        if (s3res) {
-          data['image'] = await s3res?.Key;
-        }
-        console.log(s3res.Key, '>>>>>>');
-      }
+// aws
+      // if (image) {
+      //   const { originalname, buffer } = image;
+      //   const s3res = await this.s3Service.uploadProfile(originalname, buffer);
+      //   if (s3res) {
+      //     data['image'] = await s3res?.Key;
+      //   }
+      //   console.log(s3res.Key, '>>>>>>');
+      // }
       if (registerDto.fullname) {
         data['fullname'] = registerDto.fullname;
       }
@@ -546,10 +546,11 @@ export class AuthService {
         image.originalname || 'image.jpg',
         buffer,
       );
-      if (s3res) {
-        imageurl = await s3res?.Key;
-      }
-      console.log(s3res.Key, '>>>>>>');
+      // aws
+      // if (s3res) {
+      //   imageurl = await s3res?.Key;
+      // }
+      // console.log(s3res.Key, '>>>>>>');
 
       const postimg = await this.prisma.images.create({
         data: { imageurl: imageurl, contractor: userId },

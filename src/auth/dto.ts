@@ -127,7 +127,7 @@ export class RegisterContractorDto {
 
   @Field( () => [String] ,{ nullable: true })
   @IsOptional()
-  subServices?: string[];
+  subServices?: any;
 
   @Field( { nullable: true })
   @IsOptional()
