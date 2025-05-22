@@ -55,6 +55,7 @@ type ConntractorsResponse {
   id: String!
   image: String
   isBookmark: Boolean
+  phone: String
   price: String
   rating: String
   rewies: String

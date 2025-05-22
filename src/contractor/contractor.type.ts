@@ -31,16 +31,15 @@ export class Contractor {
   @Field({ nullable: true })
   image: string;
 
-
   @Field(() => String, { nullable: true })
-  service : string;
+  service: string;
 
   @Field(() => [String], { nullable: true })
   subService: string[];
 
   @Field(() => String, { nullable: true })
   price: string;
-  
+
   @Field(() => String, { nullable: true })
   unit: string;
 
@@ -51,7 +50,6 @@ export class Contractor {
 
   @Field(() => String, { nullable: true })
   rewies: string;
-  
 }
 // rating: 3,
 // rewies: 6
@@ -63,13 +61,11 @@ export class ConntractorsResponse {
   @Field({ nullable: true })
   fullname: string;
 
-
   @Field({ nullable: true })
   image: string;
 
-
   @Field(() => String, { nullable: true })
-  service : string;
+  service: string;
 
   @Field(() => [String], { nullable: true })
   subService: string[];
@@ -77,12 +73,15 @@ export class ConntractorsResponse {
   @Field(() => String, { nullable: true })
   price: string;
 
-  @Field(() => Boolean, { nullable: true , defaultValue : false})
+  @Field(() => Boolean, { nullable: true, defaultValue: false })
   isBookmark: boolean;
-  
+
   @Field(() => String, { nullable: true })
-  unit: string; 
-  
+  unit: string;
+
+  @Field({ nullable: true })
+  phone?: string;
+
   @Field(() => String, { nullable: true })
   rating: string;
 
